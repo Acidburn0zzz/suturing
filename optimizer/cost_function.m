@@ -1,6 +1,6 @@
 function [cost] = cost_function(agent_state, env_state)
 % Returns a cost associated with a given state
-    cost = start_goal_cost(agent_state, env_state) + 100*end_goal_cost(agent_state, env_state) + trajectory_length_cost(agent_state);
+    cost = 1*start_goal_cost(agent_state, env_state) + 1*end_goal_cost(agent_state, env_state) + trajectory_length_cost(agent_state);
 end
 
 
