@@ -13,40 +13,40 @@ incision_mesh.vertices(:,3) = scale_y*incision_mesh.vertices(:,3);
 %% Generate trajectory
 T = 20; % number of timesteps in trajectory
 env_state = struct;
-env_state.start_point = [0 -1 0.7]; % needle start point
-env_state.end_point = [0 1 0.7]; % needle end point
+
+start_pose = eye(4);
+start_pose(1:3,1:3) = [0 1 0; 0 0 -1; -1 0 0]; % set the orientation
+start_pose(1:3,4) = [0 1 0]; % set the position
+
+end_pose = eye(4);
+end_pose(1:3,1:3) = [0 1 0; 0 0 1; 1 0 0]; % set the orientation
+end_pose(1:3,4) = [0 -1 0]; % set the position
+
+env_state.start_pose = start_pose;
+env_state.end_pose = end_pose;
 
 trajectory = get_motion_plan(env_state, incision_mesh, T);
 
-%% Display generated trajectory
+%% Display trajectory
+
 clf
-X = trajectory(:,1);
-Y = trajectory(:,2);
-Z = trajectory(:,3);
-
-h = scatter3(X, Y, Z);
-h.MarkerFaceColor = [0 0.5 1];
-
 hold on
-
-% use this for a nicer mesh
-% drawMesh(incision_mesh.vertices, incision_mesh.faces, [1 0 0])
+for i = 1:T
+   drawframe(trajectory(4*i-3:4*i,:), 0.25)
+end
 
 p = plot_edges(incision_mesh.vertices, mesh_edges);
 for i = 1:numel(p)
     p(i).Color = [1 0 0];
     p(i).LineWidth = 1;
 end
-plot3(X,Y,Z);
 
-xlabel('x');
-ylabel('y');
-zlabel('z');
 axis([-1 1 -1 1 -1 1]);
 axis('square');
 
+
 %% Visualize Signed Distance field
-n = 40;
+n = 30;
 step = 2/n;
 points = zeros(n^3,3);
 distances = zeros(n^3,1);
