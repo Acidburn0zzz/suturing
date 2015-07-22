@@ -1,4 +1,4 @@
-function [ trajectory ] = sqp_lie_trajopt(f, x0, ineq_con, eq_con)
+function [ trajectory ] = scp_lie_trajopt(f, x0, ineq_con, eq_con)
 %Returns a locally optimal trajectory
 %   This method uses sequential convex programming and optimize on the
 %   manifold using the lie algebra.
