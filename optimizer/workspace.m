@@ -66,3 +66,13 @@ plot = scatter3(points(:,1),points(:,2),points(:,3), [], distances);
 plot.Marker = '.';
 axis([-1 1 -1 1 -1 1]);
 axis('square');
+%% Test scp function
+
+f = @(x)(x(1)*x(1) + x(2)*x(2));
+eq_con = @(x)(0);
+ineq_con = @(x)([105;55]-x);
+x0 = [10; 10];
+solution = sqp_lie_trajopt(f,x0,ineq_con, eq_con);
+
+
+
