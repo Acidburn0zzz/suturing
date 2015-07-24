@@ -67,12 +67,16 @@ plot.Marker = '.';
 axis([-1 1 -1 1 -1 1]);
 axis('square');
 %% Test scp function
-
-f = @(x)(sin(x(1))+cos(x(2)));
+clc
+% f = @(x)((x(1))*(x(1))+x(2)*x(2));
+f  = @(x)(x(1)*x(1) + x(2)*x(2) + x(3)*x(3) + x(4)*x(4) );
+f2  = @(x)(x(1) + x(2) + x(3) + x(4) );
 eq_con = @(x)(0);
 ineq_con = @(x)(0);
-x0 = [0.3; 0.3];
-solution = scp_lie_trajopt(f,x0,ineq_con, eq_con);
-
+ineq_con2 = @(x)([3-x(1)*10000; 9-x(2)*10; x-1; x-1; -x]);
+ineq_con3 = @(x)([1000-x(1); 100-x(2); 10-x(3); 1-x(4)]);
+x0 = [200; 200; 200; 200];
+solution = scp_lie_trajopt(f,x0,ineq_con3, eq_con);
+disp(solution)
 
 

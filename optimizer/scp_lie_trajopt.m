@@ -7,18 +7,18 @@ function [ trajectory ] = scp_lie_trajopt(f, x0, ineq_con, eq_con)
     % OPTIONS  
     %===========??
     params = struct;
-    params.mu = 0.01; % initial penalty coefficient
+    params.mu = 0.001; % initial penalty coefficient
     params.k = 2; % penalty scaling factor
-    params.s = 0.1; % intial trust region size
+    params.s = 0.5; % intial trust region size
     params.trust_region_scale = 2; % step size to scale the trust region
     params.min_approx_quality = 0.1; % minimum approximation quality for the trust region
-    params.max_penalty_iterations = 100; % number of iterations penalty loop
-    params.max_convex_iterations = 1000;
-    params.max_trust_region_iterations = 1000;
-    params.max_ctol = 0.001; % max_deviation for constraints
-    params.max_xtol = 0.001;
-    params.max_ftol = 0.001;
-    params.h = 0.00001; % difference used to compute numerical gradients
+    params.max_penalty_iterations = 50; % number of iterations penalty loop
+    params.max_convex_iterations = 400;
+    params.max_trust_region_iterations = 100;
+    params.max_ctol = 0.5; % max_deviation for constraints
+    params.max_xtol = 0.00001;
+    params.max_ftol = 0.00001;
+    params.h = 0.0001; % difference used to compute numerical gradients
 
     % penalty iteration loop
     x = x0;
@@ -32,20 +32,23 @@ function [ trajectory ] = scp_lie_trajopt(f, x0, ineq_con, eq_con)
         else
             % constraints are violated so the penalty coefficent must
             % be increased
+            disp(x');
+            disp('Constraint penalty too small. Re-solving with higher penalities');
             params.mu = params.mu*params.k;
         end
     end
     if con_tol > params.max_ctol
         disp('Failed to satisfy constraints');
     end
+    disp(params.mu);
     trajectory = x; 
-    
 end
 
 
 function [trajectory, con_tol] = opt_unconstrained(f, x, ineq_con, eq_con, params)
-    s = params.s; % get the initial trust region size
+   
     for i = 1:params.max_convex_iterations
+        s = params.s; % get the initial trust region size
         % generate local convex approximation of the problem
         mu = params.mu;
         % construct the lagrangian
@@ -63,7 +66,7 @@ function [trajectory, con_tol] = opt_unconstrained(f, x, ineq_con, eq_con, param
            quality = (curr_obj-next_obj)/(s*(gradient'*gradient));
            if quality > params.min_approx_quality % quality of the approximation is good
                x = x_next;
-               s = params.trust_region_scale*s; % increase the size of the trust region
+               s = s*params.trust_region_scale; % increase the size of the trust region
                break;
            else
                s = s/params.trust_region_scale; % decrease the size of the trust region
@@ -76,7 +79,12 @@ function [trajectory, con_tol] = opt_unconstrained(f, x, ineq_con, eq_con, param
         end
         
         % check if objective or state is converging
-        if s < params.max_xtol || curr_obj-next_obj < params.max_ftol
+        if s < params.max_xtol
+            disp('Breaking out of SQP loop: X steps size too small')
+            break
+        end
+        if curr_obj-next_obj < params.max_ftol
+            disp('Breaking out of SQP loop: objective improvement too small')
             break
         end
     end
@@ -86,8 +94,11 @@ end
 
 
 function [gradient] = numerical_gradient(f, x, h)
-    eval_points = repmat(x,1,length(x)) + h*eye(length(x));
-    array_func_handler = @(x)(f(eval_points(:,x)));
-    delta_f = arrayfun(array_func_handler, 1:length(x))' - f(x);
-    gradient = delta_f/h;
+    eval_points2 = repmat(x,1,length(x)) + h*eye(length(x));
+    eval_points1 = repmat(x,1,length(x)) - h*eye(length(x));
+    array_func_handler2 = @(x)(f(eval_points2(:,x)));
+    array_func_handler1 = @(x)(f(eval_points1(:,x)));
+    delta_f = arrayfun(array_func_handler2, 1:length(x))'-arrayfun(array_func_handler1, 1:length(x))';
+    gradient = delta_f/norm(delta_f);
+    
 end
