@@ -11,6 +11,7 @@ incision_mesh.vertices = scale*incision_mesh.vertices;
 incision_mesh.vertices(:,3) = scale_y*incision_mesh.vertices(:,3);
 
 %% Generate trajectory
+clc
 T = 20; % number of timesteps in trajectory
 env_state = struct;
 
@@ -24,17 +25,22 @@ end_pose(1:3,4) = [0 -1 0]; % set the position
 
 env_state.start_pose = start_pose;
 env_state.end_pose = end_pose;
+env_state.mesh = incision_mesh;
 
-trajectory = get_motion_plan(env_state, incision_mesh, T);
+trajectory = get_motion_plan(env_state, T);
 
 %% Display trajectory
 
 clf
 hold on
+
+% plot the trajectory
 for i = 1:T
-   drawframe(trajectory(4*i-3:4*i,:), 0.25)
+   drawframe(trajectory(4*i-3:4*i,:), 0.1)
 end
 
+
+% plot the mesh
 p = plot_edges(incision_mesh.vertices, mesh_edges);
 for i = 1:numel(p)
     p(i).Color = [1 0 0];
@@ -68,15 +74,10 @@ axis([-1 1 -1 1 -1 1]);
 axis('square');
 %% Test scp function
 clc
-% f = @(x)((x(1))*(x(1))+x(2)*x(2));
-f  = @(x)(x(1)*x(1) + x(2)*x(2) + x(3)*x(3) + x(4)*x(4) );
-f2  = @(x)(x(1) + x(2) + x(3) + x(4) );
-eq_con = @(x)(0);
-ineq_con = @(x)(0);
-ineq_con2 = @(x)([3-x(1)*10000; 9-x(2)*10; x-1; x-1; -x]);
-ineq_con3 = @(x)([1000-x(1); 100-x(2); 10-x(3); 1-x(4)]);
-x0 = [200; 200; 200; 200];
-solution = scp_lie_trajopt(f,x0,ineq_con3, eq_con);
-disp(solution)
-
+f = @(x)sum(1.5.^(1:length(x))*sin(x));
+eq_con = @(x)(5*pi-x(1));
+ineq_con = @(x)(3*pi-x);
+x0 = zeros(15,1);
+solution = scp_solver(f,x0,ineq_con, eq_con);
+disp(solution/pi)
 

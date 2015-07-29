@@ -1,4 +1,4 @@
-function [ trajectory ] = scp_lie_trajopt(f, x0, ineq_con, eq_con)
+function [ trajectory ] = scp_solver(f, x0, ineq_con, eq_con)
 %Returns a locally optimal trajectory
 %   This method uses sequential convex programming and optimize on the
 %   manifold using the lie algebra.
@@ -15,7 +15,7 @@ function [ trajectory ] = scp_lie_trajopt(f, x0, ineq_con, eq_con)
     params.max_penalty_iterations = 50; % number of iterations penalty loop
     params.max_convex_iterations = 1000;
     params.max_trust_region_iterations = 100;
-    params.max_ctol = 0.00001; % max_deviation for constraints
+    params.max_ctol = 0.5; % max_deviation for constraints
     params.max_xtol = 0.00000001;
     params.max_ftol = 0.00000001;
     params.h = 0.0001; % difference used to compute numerical gradients
@@ -52,24 +52,18 @@ function [trajectory, con_tol] = opt_unconstrained(f, x, ineq_con, eq_con, param
         % construct the lagrangian
         lagrangian = @(x)(f(x) + mu*sum(max(0,ineq_con(x))) + mu*sum(abs(eq_con(x))));
         
-        % initialize local parameterization to zero
-        lie_x = zeros(6*length(x)/4,1);
-        
-        % lagrangian as a lie algebra
-        lie_lagrangian = generate_lie_function(lagrangian, x);
-        
         % compute the gradient numerically
-        lie_gradient = numerical_gradient(lie_lagrangian, lie_x, params.h);
+        gradient = numerical_gradient(lagrangian, x, params.h);
+        
         
         % solve local linear problem
         curr_obj = lagrangian(x); % current value of the objective function
-        disp(curr_obj)
         for j = 1:params.max_trust_region_iterations
-           lie_x_next = -s*lie_gradient;
-           next_obj = lie_lagrangian(lie_x_next);
-           quality = (curr_obj-next_obj)/(s*(lie_gradient'*lie_gradient));
+           x_next = x - s*gradient;
+           next_obj = lagrangian(x_next);
+           quality = (curr_obj-next_obj)/(s*(gradient'*gradient));
            if quality > params.min_approx_quality % quality of the approximation is good
-               x = apply_twists(x, lie_x_next); % update x to new value
+               x = x_next;
                s = s*params.trust_region_scale; % increase the size of the trust region
                break;
            else
@@ -104,19 +98,4 @@ function [gradient] = numerical_gradient(f, x, h)
     array_func_handler1 = @(x)(f(eval_points1(:,x)));
     delta_f = arrayfun(array_func_handler2, 1:length(x))'-arrayfun(array_func_handler1, 1:length(x))';
     gradient = delta_f/norm(delta_f);
-end
-
-function [lie_function] = generate_lie_function(f,x)
-% Given a scalar function f and a homogenous(4x4) coordinate x this method
-% returns a scalar function that is a function of the local lie algebra.
-% TODO: Write a better function description
-    
-    lie_function = @(twists)(f(apply_twists(x, twists)));
-end
-
-function [output_traj] = apply_twists(input_traj, twists)
-% Applies a series of twists to a series of input trajectories.
-    apply_twist = @(i)(twistexp(twists(6*i-5:6*i))*input_traj(4*i-3:4*i,:));
-    output_traj = arrayfun(apply_twist, 1:length(input_traj)/4, 'UniformOutput', false);
-    output_traj = cell2mat(output_traj');
 end

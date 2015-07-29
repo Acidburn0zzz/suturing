@@ -1,8 +1,7 @@
-function [ c, ceq ] = nonlinear_constraints( agent_state, mesh )
+function [ceq] = nonlinear_constraints( agent_state, mesh )
 %Returns true of false for constraints
 % distance_constraints = signed_distance(agent_state, mesh.vertices, mesh.faces, 'SignedDistanceType', 'winding_number');
-ceq = curvature_constraints(agent_state);
-c = [];
+% ceq = curvature_constraints(agent_state);
 end
 
 
@@ -15,6 +14,7 @@ function [constraints] = curvature_constraints( agent_state )
     twist = [delta; 0; 0; 0; delta*curvature; 0];
     func_handler = @(x)(twistcoords(twistlog(agent_state(4*x+1:4*x+4,:)*inv(twistexp(twist)*agent_state(4*x-3:4*x,:)))));
     constraints = cell2mat(arrayfun(func_handler, 1:(size(agent_state)/4 -1), 'UniformOutput', false));
+    constraints = constraints(:);
 end
 
 % function [constraints] = separation_constraint(state)

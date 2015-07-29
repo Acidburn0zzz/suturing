@@ -1,6 +1,6 @@
 function [cost] = cost_function(agent_state, env_state)
 % Returns a cost associated with a given state
-    cost = start_goal_cost(agent_state, env_state);
+    cost = start_goal_cost(agent_state, env_state)+end_goal_cost(agent_state, env_state);
 end
 
 
@@ -13,8 +13,8 @@ end
 
 function [cost] = end_goal_cost(state, env_state)
 % trajectory should end near end goal
-    traj_end = state(end,:);
-    cost = norm(traj_end-env_state.end_point, 2);
+    traj_end = state(end-3:end,:);
+    cost = norm(pos(traj_end)-pos(env_state.end_pose), 2);
 end
 
 
