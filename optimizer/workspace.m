@@ -1,6 +1,6 @@
 %% Load Mesh
 clc
-[vertices, faces] = readSTL('~/Documents/research/suturing/code_base/meshes/test.stl');
+[vertices, faces] = readSTL('meshes/test.stl');
 incision_mesh.vertices = vertices;
 incision_mesh.faces = faces;
 
