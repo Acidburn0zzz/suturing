@@ -26,6 +26,7 @@ end_pose(1:3,4) = [0 -1 0]; % set the position
 env_state.start_pose = start_pose;
 env_state.end_pose = end_pose;
 env_state.mesh = incision_mesh;
+env_state.T = T;
 
 % trajectory = get_motion_plan(env_state, T);
 
