@@ -22,7 +22,7 @@ function [ agent_state ] = initialize_agent_state(start_pose, end_pose, timestep
         
         % construct pose
         pose = eye(4);
-        pose(1:3,1:3) = qGetR(quaternion);
+        pose(1:3,1:3) = qGetR(quaternion/norm(quaternion));
         pose(1:3,4) = position;
         
         % update trajectory with flattened pose
