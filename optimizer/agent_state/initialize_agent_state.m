@@ -1,9 +1,12 @@
-function [ agent_state ] = initialize_agent_state(start_pose, end_pose, timesteps)
+function [ agent_state ] = initialize_agent_state(env_state)
 % Returns an initial agent/robot state.
 %   The method returns a column vector containing the robot's trajectory
 %   and other parameters. The method uses linear interpolation to
 %   initialize a trajectory from the start pose to the end pose.
     
+    start_pose = env_state.start_pose;
+    end_pose = env_state.start_pose;
+    timesteps = env_state.T;
     trajectory = zeros(16*timesteps,1);
     
     trajectory(1:16) = start_pose(:); % first point is just the start pose

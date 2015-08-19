@@ -12,17 +12,9 @@ incision_mesh.vertices(:,3) = scale_y*incision_mesh.vertices(:,3);
 
 %% Generate trajectory
 clc
-T = 16; % number of timesteps in trajectory
+run('global_variables')
+
 env_state = struct;
-
-start_pose = eye(4);
-start_pose(1:3,1:3) = [0 1 0; 0 0 -1; -1 0 0]; % set the orientation
-start_pose(1:3,4) = [0 1 0]; % set the position
-
-end_pose = eye(4);
-end_pose(1:3,1:3) = [0 1 0; 0 0 1; 1 0 0]; % set the orientation
-end_pose(1:3,4) = [0 -1 0]; % set the position
-
 env_state.start_pose = start_pose;
 env_state.end_pose = end_pose;
 env_state.mesh = incision_mesh;
@@ -83,5 +75,5 @@ disp(solution/pi)
 
 
 %% Testing Agent State
-agent_state = initialize_agent_state(start_pose, end_pose, 10);
+agent_state = initialize_agent_state(env_state);
 traj = get_traj(agent_state);
