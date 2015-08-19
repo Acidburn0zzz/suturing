@@ -84,4 +84,3 @@ disp(solution/pi)
 %% Testing Agent State
 agent_state = initialize_agent_state(start_pose, end_pose, 10);
 traj = get_traj(agent_state);
-pose = get_traj_element(traj, 3);

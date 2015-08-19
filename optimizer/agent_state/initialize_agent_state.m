@@ -15,7 +15,7 @@ function [ agent_state ] = initialize_agent_state(start_pose, end_pose, timestep
     end_position = pos(end_pose);
     
     step = 1/(timesteps-1);
-    for i = 1:timesteps
+    for i = 1:timesteps-1
         % interpolate position and rotation
         position = (1-step*i)*start_position + (step*i)*end_position;
         quaternion = (1-step*i)*start_quaternion + (step*i)*end_quaternion;
