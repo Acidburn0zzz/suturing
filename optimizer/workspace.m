@@ -60,16 +60,3 @@ plot.Marker = '.';
 axis([-1 1 -1 1 -1 1]);
 axis('square');
 
-%% Test scp function
-clc
-f = @(x)sum(1.5.^(1:length(x))*sin(x));
-eq_con = @(x)(5*pi-x(1));
-ineq_con = @(x)(3*pi-x);
-x0 = zeros(15,1);
-solution = scp_solver(f,x0,ineq_con, eq_con);
-disp(solution/pi)
-
-
-%% Testing Agent State
-agent_state = initialize_agent_state(env_state);
-traj = get_traj(agent_state);

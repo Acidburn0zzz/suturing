@@ -124,7 +124,7 @@ end
 function [gradient] = numerical_gradient(f, x, h)
 
     delta_f = zeros(length(x),1);
-    for i = 1:length(x)
+    parfor i = 1:length(x)
         point = x;
         point(i) = point(i) + h;
         delta_f(i) = f(point);
