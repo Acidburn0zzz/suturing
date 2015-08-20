@@ -20,19 +20,15 @@ env_state.end_pose = end_pose;
 env_state.mesh = incision_mesh;
 env_state.T = T;
 
-% trajectory = get_motion_plan(env_state, T);
+agent_state = get_motion_plan(env_state);
 
 %% Display trajectory
 
 clf
-hold on
-drawframe(start_pose, 0.3);
-drawframe(end_pose, 0.5);
-% plot the trajectory
-for i = 1:T
-   drawframe(trajectory(4*i-3:4*i,:), 0.1)
-end
+traj = get_traj(agent_state);
+draw_traj(traj);
 % % plot the mesh
+hold on
 p = plot_edges(incision_mesh.vertices, mesh_edges);
 for i = 1:numel(p)
     p(i).Color = [1 0 0];

@@ -9,7 +9,7 @@ function [constraints] = curvature_constraints(agent_state, env_state)
 % Returns a list of equality constraints that ensure that the trajectory
 % follows constant curvature path through the tissue.
     trajectory = get_traj(agent_state);
-    delta = -0.25;
+    delta = get_nontraj_elems(agent_state);
     curvature = 1;
     twist = [0; delta; 0; delta*curvature; 0; 0];
     func_handler = @(x)(twistcoords(twistlog(get_traj_element(trajectory, x+1)*inv(twistexp(twist)*get_traj_element(trajectory, x)))));

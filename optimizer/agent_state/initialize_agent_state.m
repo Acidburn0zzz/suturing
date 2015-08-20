@@ -5,7 +5,7 @@ function [ agent_state ] = initialize_agent_state(env_state)
 %   initialize a trajectory from the start pose to the end pose.
     
     start_pose = env_state.start_pose;
-    end_pose = env_state.start_pose;
+    end_pose = env_state.end_pose;
     timesteps = env_state.T;
     trajectory = zeros(16*timesteps,1);
     

@@ -12,4 +12,3 @@ function [constraints] = signed_distance_constraints(agent_state, env_state)
     positions = cell2mat(positions);
     constraints = -1*signed_distance(positions, env_state.mesh.vertices, env_state.mesh.faces, 'SignedDistanceType', 'winding_number');
 end
-
