@@ -34,8 +34,9 @@ function [ agent_state ] = initialize_agent_state(env_state)
     
     % add parameter for spacing between trajectory points
     delta = norm(end_position-start_position)/(timesteps-1);
+    curvature = 0.000000001
     
     % concatenate additional parameters to the end of the flattened
     % trajectory
-    agent_state = [trajectory; delta];
+    agent_state = [trajectory; delta; curvature];
 end
