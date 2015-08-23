@@ -7,7 +7,7 @@ function [ agent_state ] = scp_lie_trajopt(f, agent_state, ineq_con, eq_con)
     % OPTIONS
     %============
     params = struct;
-    params.mu = 100; % initial penalty coefficient
+    params.mu = 1000; % initial penalty coefficient
     params.k = 2; % penalty scaling factor
     params.s = 0.5; % intial trust region size
     params.trust_region_scale = 1.015; % step size to scale the trust region
@@ -16,7 +16,7 @@ function [ agent_state ] = scp_lie_trajopt(f, agent_state, ineq_con, eq_con)
     params.max_penalty_iterations = 1; % number of iterations penalty loop
     params.max_convex_iterations = 500;
     params.max_trust_region_iterations = 2000;
-    params.max_ctol = 0.0001; % max_deviation for constraints
+    params.max_ctol = 0.001; % max_deviation for constraints
     params.max_xtol = 0.000001;
     params.max_ftol = 0.000001;
     params.h = 0.00001; % difference used to compute numerical gradients

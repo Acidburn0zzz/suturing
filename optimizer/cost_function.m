@@ -1,21 +1,22 @@
 function [cost] = cost_function(agent_state, env_state)
 % Returns a cost associated with a given state
-    cost = 100*start_goal_cost(agent_state, env_state) + ...
-            100*end_goal_cost(agent_state, env_state) + ...
+    cost = 600*start_goal_cost(agent_state, env_state) + ...
+            600*end_goal_cost(agent_state, env_state) + ...
             trajectory_length_cost(agent_state, env_state);
 end
 
 
 function [cost] = start_goal_cost(agent_state, env_state)
 % trajectory should start near start goal
-    traj_start = get_traj_element(get_traj(agent_state), 1);
-    cost = norm(pos(traj_start)-pos(env_state.start_pose), 2);
+    x = twistcoords(twistlog(get_traj_element(get_traj(agent_state), 2)));
+    x_hat = twistcoords(twistlog(env_state.start_pose));
+    cost = norm(x-x_hat, 2);
 end
 
 
 function [cost] = end_goal_cost(agent_state, env_state)
 % trajectory should end near end goal
-    traj_end = get_traj_element(get_traj(agent_state), env_state.T);
+    traj_end = get_traj_element(get_traj(agent_state), env_state.T-1);
     cost = norm(pos(traj_end)-pos(env_state.end_pose), 2);
 end
 
