@@ -2,17 +2,17 @@ function [ trajectory ] = scp_solver(f, x0, ineq_con, eq_con)
 %Returns a locally optimal trajectory
 %   This method uses sequential convex programming and optimize on the
 %   manifold using the lie algebra.
-    
+
     %===========
-    % OPTIONS  
+    % OPTIONS
     %===========??
     params = struct;
-    params.mu = 0.001; % initial penalty coefficient
+    params.mu = 1000; % initial penalty coefficient
     params.k = 2; % penalty scaling factor
     params.s = 0.5; % intial trust region size
     params.trust_region_scale = 2; % step size to scale the trust region
     params.min_approx_quality = 0.1; % minimum approximation quality for the trust region
-    params.max_penalty_iterations = 50; % number of iterations penalty loop
+    params.max_penalty_iterations = 1; % number of iterations penalty loop
     params.max_convex_iterations = 1000;
     params.max_trust_region_iterations = 100;
     params.max_ctol = 0.5; % max_deviation for constraints
@@ -39,23 +39,23 @@ function [ trajectory ] = scp_solver(f, x0, ineq_con, eq_con)
     if con_tol > params.max_ctol
         disp('Failed to satisfy constraints');
     end
-    trajectory = x; 
+    trajectory = x;
 end
 
 
 function [trajectory, con_tol] = opt_unconstrained(f, x, ineq_con, eq_con, params)
-   
+
     for i = 1:params.max_convex_iterations
         s = params.s; % get the initial trust region size
         % generate local convex approximation of the problem
         mu = params.mu;
         % construct the lagrangian
         lagrangian = @(x)(f(x) + mu*sum(max(0,ineq_con(x))) + mu*sum(abs(eq_con(x))));
-        
+
         % compute the gradient numerically
         gradient = numerical_gradient(lagrangian, x, params.h);
-        
-        
+
+
         % solve local linear problem
         curr_obj = lagrangian(x); % current value of the objective function
         for j = 1:params.max_trust_region_iterations
@@ -69,13 +69,13 @@ function [trajectory, con_tol] = opt_unconstrained(f, x, ineq_con, eq_con, param
            else
                s = s/params.trust_region_scale; % decrease the size of the trust region
            end
-           
+
            % check if the step size is smaller than the tolerance
            if s < params.max_xtol
                break;
            end
         end
-        
+
         % check if objective or state is converging
         if s < params.max_xtol
             disp('Breaking out of SQP loop: X steps size too small')

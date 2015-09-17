@@ -4,7 +4,7 @@ function [] = arrow3(O, D, color, linewidth)
 %	ARROW3(O, D)
 %	ARROW3(O, D, COLOR, LINEWIDTH)
 %
-% Draws an arrow with the origin at O, and in direction D.  Thus, the head
+% Draws an arrow with the originCORK_INC at O, and in direction D.  Thus, the head
 % of the arrow will be at O + D.
 
 % $Id: arrow3.m,v 1.1 2009-03-17 16:40:18 bradleyk Exp $

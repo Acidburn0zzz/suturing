@@ -21,6 +21,7 @@ function [ agent_state ] = initialize_agent_state(env_state)
     for i = 1:timesteps-1
         % interpolate position and rotation
         position = (1-step*i)*start_position + (step*i)*end_position;
+        position(3) = position(3)-0.0;
         quaternion = (1-step*i)*start_quaternion + (step*i)*end_quaternion;
         
         % construct pose
@@ -34,10 +35,12 @@ function [ agent_state ] = initialize_agent_state(env_state)
     
     % add parameter for spacing between trajectory points
     delta = norm(end_position-start_position)/(timesteps-1);
-    curvature = 0.000000000
-    1;
+    curvature = 0.000000000;
+    
+    % curve delta 
+    curve_deltas = zeros(timesteps-1, 1);
     
     % concatenate additional parameters to the end of the flattened
     % trajectory
-    agent_state = [trajectory; delta; curvature];
+    agent_state = [trajectory; delta; curvature; curve_deltas];
 end
